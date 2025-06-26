@@ -468,9 +468,74 @@
                 font-size: 16px;
             }
         }
+        
+        /* Language Selector Styles */
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .language-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+        }
+        
+        .language-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #2c3e50;
+        }
+        
+        .language-btn:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+        }
+        
+        .language-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .language-btn img {
+            width: 20px;
+            height: 14px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="language-btn active" onclick="setLanguage('zh-TW')" data-lang="zh-TW">
+            🇹🇼 中文
+        </button>
+        <button class="language-btn" onclick="setLanguage('th')" data-lang="th">
+            🇹🇭 ไทย
+        </button>
+        <button class="language-btn" onclick="setLanguage('en')" data-lang="en">
+            🇺🇸 English
+        </button>
+    </div>
+    
     <div class="container">
         <div class="header">
             <img src="logo.png" alt="GatherEase AI Logo" style="max-height: 80px; margin-bottom: 20px;">
@@ -480,13 +545,13 @@
         
         <div class="important-notice">
             <h3>📌 重要提醒：文件準備說明</h3>
-            <ul>
-                <li><strong>台灣人：</strong>只需護照影本（需本人簽名）</li>
-                <li><strong>泰國人：</strong>身份證影本 + 戶口名簿影本（需本人簽名）</li>
-                <li><strong>其他國籍：</strong>護照影本（需本人簽名）</li>
-                <li><strong>法人：</strong>公司登記證明 + 負責人身份證明文件</li>
+            <ul id="documentList">
+                <li><strong id="taiwanPerson">台灣人：</strong><span id="taiwanPersonDoc">只需護照影本（需本人簽名）</span></li>
+                <li><strong id="thaiPerson">泰國人：</strong><span id="thaiPersonDoc">身份證影本 + 戶口名簿影本（需本人簽名）</span></li>
+                <li><strong id="otherNationality">其他國籍：</strong><span id="otherNationalityDoc">護照影本（需本人簽名）</span></li>
+                <li><strong id="legalPerson">法人：</strong><span id="legalPersonDoc">公司登記證明 + 負責人身份證明文件</span></li>
             </ul>
-            <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
+            <p id="documentNote" style="color: #c62828; margin-top: 10px; font-weight: bold;">
                 💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
             </p>
         </div>
@@ -505,10 +570,17 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>公司名稱（中文）</th>
+                            <th class="company-name-zh-label">公司名稱（中文）</th>
                             <td>
-                                <input type="text" name="company_name_zh" placeholder="例：永恆科技有限公司">
-                                <div class="hint">選填項目</div>
+                                <input type="text" name="company_name_zh" class="company-name-zh-input" placeholder="例：永恆科技有限公司">
+                                <div class="hint company-name-zh-hint">選填項目</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="company-name-th-label">公司名稱（泰文）</th>
+                            <td>
+                                <input type="text" name="company_name_th" class="company-name-th-input" placeholder="ตัวอย่าง: บริษัท เทคโนโลยีตลอดไป จำกัด">
+                                <div class="hint company-name-th-hint">選填項目</div>
                             </td>
                         </tr>
                         <tr>
@@ -554,30 +626,30 @@
                             </td>
                         </tr>
                         <tr id="addressProofRow" style="display: none;">
-                            <th>地址證明文件<span class="required">*</span></th>
+                            <th class="address-proof-docs-title">地址證明文件<span class="required">*</span></th>
                             <td>
                                 <div class="document-requirements">
-                                    <h4>📄 需要上傳的文件：</h4>
+                                    <h4 class="documents-required-title">📄 需要上傳的文件：</h4>
                                     <ul style="margin: 5px 0; padding-left: 20px;">
-                                        <li>戶口名簿影本</li>
-                                        <li>租屋合約書</li>
-                                        <li>屋主身分證</li>
-                                        <li>如戶口名簿無法確認屋主身份：需額外提供土地權狀 + 買賣合約書</li>
+                                        <li class="household-reg-copy">戶口名簿影本</li>
+                                        <li class="rental-agreement">租屋合約書</li>
+                                        <li class="owner-id-copy">屋主身分證</li>
+                                        <li class="additional-docs-note">如戶口名簿無法確認屋主身份：需額外提供土地權狀 + 買賣合約書</li>
                                     </ul>
                                 </div>
                                 <div class="file-upload-area" onclick="document.getElementById('address_proof').click()">
                                     <input type="file" id="address_proof" name="address_proof" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'address_proof')">
                                     <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                                    <p style="margin: 5px 0;">上傳地址證明相關文件</p>
-                                    <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG（可多選）</p>
+                                    <p style="margin: 5px 0;" class="upload-address-proof">上傳地址證明相關文件</p>
+                                    <p style="font-size: 12px; color: #666;" class="supported-formats">支援格式：PDF, JPG, PNG（可多選）</p>
                                 </div>
                                 <div class="file-list" id="file-list-address_proof"></div>
                             </td>
                         </tr>
                         <tr>
-                            <th>公司印章</th>
+                            <th class="company-stamp-label">公司印章</th>
                             <td>
-                                <div style="padding: 10px; background: #e8f5e9; border-radius: 5px; color: #2e7d32;">
+                                <div style="padding: 10px; background: #e8f5e9; border-radius: 5px; color: #2e7d32;" class="stamp-message">
                                     ✅ 公司大小章將由事務所統一製作提供
                                 </div>
                             </td>
@@ -599,47 +671,47 @@
                             <div class="person-header">
                                 <div>
                                     <span class="person-number">1</span>
-                                    <span style="font-weight: bold;">股東 1</span>
+                                    <span style="font-weight: bold;" class="shareholder-title">股東 1</span>
                                 </div>
                             </div>
                             
                             <div class="simple-input-group">
-                                <label>股東姓名<span class="required">*</span></label>
-                                <input type="text" name="shareholder_name_1" placeholder="請輸入姓名" required onchange="updateSelects()">
+                                <label class="shareholder-name-label">股東姓名<span class="required">*</span></label>
+                                <input type="text" name="shareholder_name_1" class="name-input" placeholder="請輸入姓名" required onchange="updateSelects()">
                             </div>
                             
                             <div class="simple-input-group">
-                                <label>持股比例<span class="required">*</span></label>
-                                <input type="number" name="share_percentage_1" min="0" max="100" placeholder="例：50" required onchange="updatePercentage()">
+                                <label class="shareholding-percentage-label">持股比例<span class="required">*</span></label>
+                                <input type="number" name="share_percentage_1" min="0" max="100" class="shareholding-input" placeholder="例：50" required onchange="updatePercentage()">
                                 <span>%</span>
                             </div>
                             
                             <div style="margin: 20px 0;">
-                                <label style="font-weight: bold; color: #2c3e50;">上傳股東文件<span class="required">*</span></label>
+                                <label style="font-weight: bold; color: #2c3e50;" class="upload-shareholder-docs-label">上傳股東文件<span class="required">*</span></label>
                                 <div class="document-requirements">
-                                    <h4>📄 需要上傳的文件：</h4>
-                                    <ul style="margin: 5px 0; padding-left: 20px;">
-                                        <li>台灣人：護照影本</li>
-                                        <li>泰國人：身份證 + 戶口名簿影本</li>
-                                        <li>其他國籍：護照影本</li>
-                                        <li>法人：公司登記證明 + 負責人身份證明</li>
+                                    <h4 class="documents-required-title">📄 需要上傳的文件：</h4>
+                                    <ul style="margin: 5px 0; padding-left: 20px;" class="shareholder-docs-list">
+                                        <li class="taiwan-person-doc2">台灣人：護照影本</li>
+                                        <li class="thai-person-doc2">泰國人：身份證 + 戶口名簿影本</li>
+                                        <li class="other-nationality-doc2">其他國籍：護照影本</li>
+                                        <li class="legal-person-doc2">法人：公司登記證明 + 負責人身份證明</li>
                                     </ul>
-                                    <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
+                                    <p style="color: #c62828; margin-top: 10px; font-weight: bold;" class="document-note">
                                         💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
                                     </p>
                                 </div>
                                 <div class="file-upload-area" onclick="document.getElementById('shareholder_files_1').click()">
                                     <input type="file" id="shareholder_files_1" name="shareholder_files_1" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'shareholder_1')">
                                     <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                                    <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                                    <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                                    <p style="margin: 5px 0;" class="upload-hint">點擊上傳檔案或拖曳檔案到此處</p>
+                                    <p style="font-size: 12px; color: #666;" class="supported-formats">支援格式：PDF, JPG, PNG</p>
                                 </div>
                                 <div class="file-list" id="file-list-shareholder_1"></div>
                             </div>
                         </div>
                     </div>
                     
-                    <button type="button" class="add-btn" onclick="addShareholder()">+ 新增股東</button>
+                    <button type="button" class="add-btn add-shareholder-btn" onclick="addShareholder()">+ 新增股東</button>
                 </div>
             </div>
 
@@ -652,23 +724,23 @@
                             <div class="person-header">
                                 <div>
                                     <span class="person-number">1</span>
-                                    <span style="font-weight: bold;">董事 1</span>
+                                    <span style="font-weight: bold;" class="director-title">董事 1</span>
                                 </div>
                             </div>
                             
                             <div class="radio-group">
                                 <label class="radio-item">
                                     <input type="radio" name="director_source_1" value="shareholder" checked onchange="toggleDirectorSource(1)">
-                                    <span>從股東選擇</span>
+                                    <span class="from-shareholder-label">從股東選擇</span>
                                 </label>
                                 <label class="radio-item">
                                     <input type="radio" name="director_source_1" value="external" onchange="toggleDirectorSource(1)">
-                                    <span>外部人士</span>
+                                    <span class="external-label">外部人士</span>
                                 </label>
                             </div>
                             
                             <div id="shareholderDirectorSection_1" style="margin-top: 15px;">
-                                <label style="font-weight: bold; color: #2c3e50;">選擇股東</label>
+                                <label style="font-weight: bold; color: #2c3e50;" class="select-shareholder-label">選擇股東</label>
                                 <select name="director_shareholder_1" class="director-shareholder-select" style="margin-top: 5px;">
                                     <!-- Options will be populated by updateSelects() -->
                                 </select>
@@ -676,28 +748,28 @@
                             
                             <div id="externalDirectorSection_1" style="display: none; margin-top: 15px;">
                                 <div class="simple-input-group">
-                                    <label>董事姓名<span class="required">*</span></label>
-                                    <input type="text" name="external_director_name_1" placeholder="請輸入姓名">
+                                    <label class="director-name-label">董事姓名<span class="required">*</span></label>
+                                    <input type="text" name="external_director_name_1" class="name-input" placeholder="請輸入姓名">
                                 </div>
                                 
                                 <div style="margin-top: 15px;">
-                                    <label style="font-weight: bold; color: #2c3e50;">上傳董事文件<span class="required">*</span></label>
+                                    <label style="font-weight: bold; color: #2c3e50;" class="upload-director-docs-label">上傳董事文件<span class="required">*</span></label>
                                     <div class="document-requirements">
-                                        <h4>📄 需要上傳的文件：</h4>
+                                        <h4 class="documents-required-title">📄 需要上傳的文件：</h4>
                                         <ul style="margin: 5px 0; padding-left: 20px;">
-                                            <li>台灣人：護照影本</li>
-                                            <li>泰國人：身份證影本</li>
-                                            <li>其他國籍：護照影本</li>
+                                            <li class="taiwan-person-doc3">台灣人：護照影本</li>
+                                            <li class="thai-person-doc3">泰國人：身份證影本</li>
+                                            <li class="other-nationality-doc3">其他國籍：護照影本</li>
                                         </ul>
-                                        <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
+                                        <p style="color: #c62828; margin-top: 10px; font-weight: bold;" class="document-note">
                                             💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
                                         </p>
                                     </div>
                                     <div class="file-upload-area" onclick="document.getElementById('director_files_1').click()">
                                         <input type="file" id="director_files_1" name="director_files_1" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'director_1')">
                                         <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                                        <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                                        <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                                        <p style="margin: 5px 0;" class="upload-hint">點擊上傳檔案或拖曳檔案到此處</p>
+                                        <p style="font-size: 12px; color: #666;" class="supported-formats">支援格式：PDF, JPG, PNG</p>
                                     </div>
                                     <div class="file-list" id="file-list-director_1"></div>
                                 </div>
@@ -705,7 +777,7 @@
                         </div>
                     </div>
                     
-                    <button type="button" class="add-btn" onclick="addDirector()">+ 新增董事</button>
+                    <button type="button" class="add-btn add-director-btn add-director-btn-text" onclick="addDirector()">+ 新增董事</button>
                 </div>
             </div>
 
@@ -716,26 +788,26 @@
                     <div class="radio-group">
                         <label class="radio-item">
                             <input type="radio" name="manager_type" value="director" checked onchange="toggleManagerSection()">
-                            <span>負責人為董事之一</span>
+                            <span class="manager-from-director-label">負責人為董事之一</span>
                         </label>
                         <label class="radio-item">
                             <input type="radio" name="manager_type" value="external" onchange="toggleManagerSection()">
-                            <span>負責人為外部人士</span>
+                            <span class="external-manager-label">負責人為外部人士</span>
                         </label>
                     </div>
                     
                     <div id="directorManagerSection" style="margin-top: 15px;">
-                        <label style="font-weight: bold; color: #2c3e50;">請選擇哪位董事為負責人<span class="required">*</span></label>
+                        <label style="font-weight: bold; color: #2c3e50;" class="select-director-as-manager-label">請選擇哪位董事為負責人<span class="required">*</span></label>
                         <select name="manager_director" id="managerDirectorSelect" style="margin-top: 5px;">
                             <!-- Options will be populated by updateSelects() -->
                         </select>
-                        <div class="hint">負責人文件將使用該董事已上傳的文件</div>
+                        <div class="hint manager-doc-note">負責人文件將使用該董事已上傳的文件</div>
                     </div>
                     
                     <div id="externalManagerSection" style="display: none; margin-top: 15px;">
                         <div class="simple-input-group">
-                            <label>負責人姓名<span class="required">*</span></label>
-                            <input type="text" name="external_manager_name" placeholder="請輸入姓名">
+                            <label class="manager-name-label">負責人姓名<span class="required">*</span></label>
+                            <input type="text" name="external_manager_name" class="name-input" placeholder="請輸入姓名">
                         </div>
                         
                         <div style="margin-top: 15px;">
@@ -768,15 +840,15 @@
                 <div class="section-header">五、授權簽字人</div>
                 <div class="section-content">
                     <div style="margin-bottom: 20px;">
-                        <label style="font-weight: bold; color: #2c3e50;">授權簽署方式<span class="required">*</span></label>
+                        <label style="font-weight: bold; color: #2c3e50;" class="auth-signing-method-label">授權簽署方式<span class="required">*</span></label>
                         <div class="radio-group" style="margin-top: 10px;">
                             <label class="radio-item">
                                 <input type="radio" name="auth_type" value="single" checked>
-                                <span>單獨簽署（任一人均可代表）</span>
+                                <span class="single-signing-label">單獨簽署（任一人均可代表）</span>
                             </label>
                             <label class="radio-item">
                                 <input type="radio" name="auth_type" value="joint">
-                                <span>共同簽署（需所有人簽署）</span>
+                                <span class="joint-signing-label">共同簽署（需所有人簽署）</span>
                             </label>
                         </div>
                     </div>
@@ -786,23 +858,23 @@
                             <div class="person-header">
                                 <div>
                                     <span class="person-number" style="background: #0277bd;">1</span>
-                                    <span style="font-weight: bold;">簽字人 1</span>
+                                    <span style="font-weight: bold;" class="signer-title">簽字人 1</span>
                                 </div>
                             </div>
                             
                             <div class="radio-group">
                                 <label class="radio-item">
                                     <input type="radio" name="signer_source_1" value="director" checked onchange="toggleSignerSource(1)">
-                                    <span>從董事選擇</span>
+                                    <span class="from-director-label">從董事選擇</span>
                                 </label>
                                 <label class="radio-item">
                                     <input type="radio" name="signer_source_1" value="external" onchange="toggleSignerSource(1)">
-                                    <span>外部人士</span>
+                                    <span class="external-label">外部人士</span>
                                 </label>
                             </div>
                             
                             <div id="directorSignerSection_1" style="margin-top: 15px;">
-                                <label style="font-weight: bold; color: #2c3e50;">選擇董事</label>
+                                <label style="font-weight: bold; color: #2c3e50;" class="select-director-label">選擇董事</label>
                                 <select name="signer_director_1" class="signer-director-select" style="margin-top: 5px;">
                                     <!-- Options will be populated by updateSelects() -->
                                 </select>
@@ -810,12 +882,12 @@
                             
                             <div id="externalSignerSection_1" style="display: none; margin-top: 15px;">
                                 <div class="simple-input-group">
-                                    <label>姓名<span class="required">*</span></label>
-                                    <input type="text" name="external_signer_name_1" placeholder="請輸入姓名">
+                                    <label class="signer-name-label">姓名<span class="required">*</span></label>
+                                    <input type="text" name="external_signer_name_1" class="name-input" placeholder="請輸入姓名">
                                 </div>
                                 
                                 <div style="margin-top: 15px;">
-                                    <label style="font-weight: bold; color: #2c3e50;">上傳簽字人文件<span class="required">*</span></label>
+                                    <label style="font-weight: bold; color: #2c3e50;">${t.uploadSignerDocs}<span class="required">*</span></label>
                                     <div class="document-requirements">
                                         <h4>📄 需要上傳的文件：</h4>
                                         <ul style="margin: 5px 0; padding-left: 20px;">
@@ -830,8 +902,8 @@
                                     <div class="file-upload-area" onclick="document.getElementById('signer_files_1').click()">
                                         <input type="file" id="signer_files_1" name="signer_files_1" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'signer_1')">
                                         <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                                        <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                                        <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                                        <p style="margin: 5px 0;" class="upload-hint">點擊上傳檔案或拖曳檔案到此處</p>
+                                        <p style="font-size: 12px; color: #666;" class="supported-formats">支援格式：PDF, JPG, PNG</p>
                                     </div>
                                     <div class="file-list" id="file-list-signer_1"></div>
                                 </div>
@@ -839,7 +911,7 @@
                         </div>
                     </div>
                     
-                    <button type="button" class="add-btn" onclick="addSigner()">+ 新增簽字人</button>
+                    <button type="button" class="add-btn add-signer-btn" onclick="addSigner()">+ 新增簽字人</button>
                 </div>
             </div>
 
@@ -862,6 +934,809 @@
         let directorCount = 1;
         let signerCount = 1;
         let uploadedFiles = {};
+        let currentLanguage = 'zh-TW';
+        
+        // Language translations
+        const translations = {
+            'zh-TW': {
+                // Header
+                'pageTitle': '公司註冊資料表單',
+                'pageSubtitle': '請填寫基本資料並上傳所需文件',
+                
+                // Important notice
+                'importantNoticeTitle': '📌 重要提醒：文件準備說明',
+                'taiwanPerson': '台灣人：',
+                'taiwanPersonDoc': '只需護照影本（需本人簽名）',
+                'thaiPerson': '泰國人：',
+                'thaiPersonDoc': '身份證影本 + 戶口名簿影本（需本人簽名）',
+                'otherNationality': '其他國籍：',
+                'otherNationalityDoc': '護照影本（需本人簽名）',
+                'legalPerson': '法人：',
+                'legalPersonDoc': '公司登記證明 + 負責人身份證明文件',
+                'documentNote': '💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所',
+                
+                // Section headers
+                'section1': '一、公司基本資料',
+                'section2': '二、股東資料',
+                'section3': '三、董事資料',
+                'section4': '四、負責人資料',
+                'section5': '五、授權簽字人',
+                
+                // Company info fields
+                'companyNameEn': '公司名稱（英文）',
+                'companyNameZh': '公司名稱（中文）',
+                'companyNameTh': '公司名稱（泰文）',
+                'capital': '註冊資本額',
+                'businessItems': '營業項目',
+                'companyAddress': '公司登記地址',
+                'useHgmAddress': '是否使用 HGM 地址服務？',
+                'yes': '是',
+                'no': '否',
+                'companyStamp': '公司印章',
+                
+                // Hints
+                'companyNameEnHint': '請使用大寫英文字母（主要的）',
+                'companyNameZhHint': '選填項目',
+                'capitalHint': '請填寫數字金額（泰銖）',
+                'businessItemsPlaceholder': '請詳細說明公司營業項目，可列點說明：\n1. 電腦軟體設計\n2. 資訊技術諮詢服務\n3. 電子商務平台經營',
+                
+                // Shareholder fields
+                'shareholderInfo': '股東',
+                'shareholderName': '股東姓名',
+                'shareholderType': '股東類型',
+                'naturalPerson': '自然人',
+                'shares': '股數',
+                'sharePercentage': '持股比例',
+                'currentShareTotal': '目前持股比例總計：',
+                
+                // Common buttons
+                'remove': '移除',
+                'addShareholder': '新增股東',
+                'addDirector': '新增董事',
+                'addSigner': '新增簽字人',
+                
+                // Submit buttons
+                'saveDraft': '儲存草稿',
+                'submitForm': '提交表單',
+                
+                // Help section
+                'needHelp': '需要協助？',
+                'contactInfo': '如有任何問題，請聯繫我們的客服團隊',
+                
+                // File upload
+                'uploadFiles': '上傳文件',
+                'supportedFormats': '支援格式：PDF, JPG, PNG（可多選）',
+                
+                // Address proof
+                'addressProofDocs': '地址證明文件',
+                'addressDocsRequired': '📄 需要上傳的文件：',
+                'householdRegistration': '戶口名簿影本',
+                'rentalContract': '租屋合約書',
+                'ownerIdCard': '屋主身分證',
+                'additionalDocs': '如戶口名簿無法確認屋主身份：需額外提供土地權狀 + 買賣合約書',
+                
+                // Messages
+                'hgmAddressMessage': '✅ 將使用 HGM 提供的登記地址服務，無需額外準備地址證明文件',
+                'stampMessage': '✅ 公司大小章將由事務所統一製作提供',
+                
+                // Placeholders
+                'nameThaiPlaceholder': '例：นายสมชาย ใจดี',
+                'nameEnPlaceholder': '例：SOMCHAI JAIDEE',
+                'companyNameEnPlaceholder': '例：FOREVER NICE TECH CO., LTD.',
+                'companyNameZhPlaceholder': '例：永恆科技有限公司',
+                'companyNameThPlaceholder': 'ตัวอย่าง: บริษัท เทคโนโลยีตลอดไป จำกัด',
+                'companyNameThHint': '選填項目',
+                'capitalPlaceholder': '例：1000000',
+                'addressPlaceholder': '請填寫公司登記地址',
+                'completeAddressHint': '請提供完整的登記地址',
+                
+                // Shareholder section
+                'shareholderNumber': '股東',
+                'shareholderNameLabel': '股東姓名',
+                'shareholdingPercentage': '持股比例',
+                'uploadShareholderDocs': '上傳股東文件',
+                'documentsRequired': '📄 需要上傳的文件：',
+                'taiwanPersonDoc2': '台灣人：護照影本',
+                'thaiPersonDoc2': '泰國人：身份證 + 戶口名簿影本',
+                'otherNationalityDoc2': '其他國籍：護照影本',
+                'legalPersonDoc2': '法人：公司登記證明 + 負責人身份證明',
+                'uploadHint': '點擊上傳檔案或拖曳檔案到此處',
+                'nameInputPlaceholder': '請輸入姓名',
+                'shareholdingPlaceholder': '例：50',
+                
+                // Director section
+                'directorNumber': '董事',
+                'fromShareholder': '從股東選擇',
+                'external': '外部人員',
+                'selectShareholder': '選擇股東',
+                'directorName': '董事姓名',
+                'uploadDirectorDocs': '上傳董事文件',
+                'taiwanPersonDoc3': '台灣人：護照影本',
+                'thaiPersonDoc3': '泰國人：身份證影本',
+                'otherNationalityDoc3': '其他國籍：護照影本',
+                
+                // Manager section
+                'managerSelection': '負責人選擇',
+                'managerFromDirector': '負責人為董事之一',
+                'externalManager': '外部負責人',
+                'selectDirectorAsManager': '請選擇哪位董事為負責人',
+                'managerDocNote': '負責人文件將使用該董事已上傳的文件',
+                'managerName': '負責人姓名',
+                'uploadManagerDocs': '上傳負責人文件',
+                
+                // Signing authority section
+                'signingAuthority': '簽字權設定',
+                'signerNumber': '簽字人',
+                'selectDirector': '選擇董事',
+                'signerName': '姓名',
+                'signingMethod': '簽字方式',
+                'anyOne': '任意 1 位簽字',
+                'anyTwo': '任意 2 位簽字',
+                'twoOrMore': '兩位以上簽字',
+                'authSigningMethod': '授權簽署方式',
+                'singleSigning': '單獨簽署（任一人均可代表）',
+                'jointSigning': '共同簽署（需所有人簽署）',
+                'fromDirector': '從董事選擇',
+                'uploadSignerDocs': '上傳簽字人文件',
+                
+                // Address proof section
+                'addressProofDocsTitle': '地址證明文件',
+                'householdRegCopy': '戶口名簿影本',
+                'rentalAgreement': '租屋合約書',
+                'ownerIdCopy': '屋主身分證',
+                'additionalDocsNote': '如戶口名簿無法確認屋主身份：需額外提供土地權狀 + 買賣合約書',
+                'uploadAddressProof': '上傳地址證明相關文件',
+                
+                // File upload
+                'uploadHint': '點擊上傳檔案或拖曳檔案到此處',
+                'supportedFormats': '支援格式：PDF, JPG, PNG',
+                'addDirectorBtnText': '+ 新增董事'
+            },
+            'th': {
+                // Header
+                'pageTitle': 'แบบฟอร์มจดทะเบียนบริษัท',
+                'pageSubtitle': 'กรุณากรอกข้อมูลและอัพโหลดเอกสารที่จำเป็น',
+                
+                // Important notice
+                'importantNoticeTitle': '📌 คำเตือนสำคัญ: การเตรียมเอกสาร',
+                'taiwanPerson': 'คนไต้หวัน:',
+                'taiwanPersonDoc': 'ต้องใช้สำเนาหนังสือเดินทาง (ต้องลงนามด้วยตนเอง)',
+                'thaiPerson': 'คนไทย:',
+                'thaiPersonDoc': 'สำเนาบัตรประชาชน + สำเนาทะเบียนบ้าน (ต้องลงนามด้วยตนเอง)',
+                'otherNationality': 'สัญชาติอื่น:',
+                'otherNationalityDoc': 'สำเนาหนังสือเดินทาง (ต้องลงนามด้วยตนเอง)',
+                'legalPerson': 'นิติบุคคล:',
+                'legalPersonDoc': 'หนังสือรับรองบริษัท + เอกสารประจำตัวผู้มีอำนาจ',
+                'documentNote': '💡 ต้องให้ "สำเนา" และลงนามบนสำเนา พร้อมส่งสำเนาที่ลงนามแล้วไปยังสำนักงาน',
+                
+                // Section headers
+                'section1': '๑. ข้อมูลพื้นฐานบริษัท',
+                'section2': '๒. ข้อมูลผู้ถือหุ้น',
+                'section3': '๓. ข้อมูลกรรมการ',
+                'section4': '๔. ข้อมูลผู้จัดการ',
+                'section5': '๕. ผู้มีอำนาจลงนาม',
+                
+                // Company info fields
+                'companyNameEn': 'ชื่อบริษัท (ภาษาอังกฤษ)',
+                'companyNameZh': 'ชื่อบริษัท (ภาษาจีน)',
+                'companyNameTh': 'ชื่อบริษัท (ภาษาไทย)',
+                'capital': 'ทุนจดทะเบียน',
+                'businessItems': 'วัตถุประสงค์',
+                'companyAddress': 'ที่อยู่จดทะเบียนบริษัท',
+                'useHgmAddress': 'ใช้บริการที่อยู่ HGM หรือไม่?',
+                'yes': 'ใช่',
+                'no': 'ไม่',
+                'companyStamp': 'ตราประทับบริษัท',
+                
+                // Hints
+                'companyNameEnHint': 'กรุณาใช้ตัวอักษรภาษาอังกฤษตัวใหญ่',
+                'companyNameZhHint': 'ไม่บังคับกรอก',
+                'capitalHint': 'กรุณากรอกจำนวนเงิน (บาท)',
+                'businessItemsPlaceholder': 'กรุณาระบุวัตถุประสงค์โดยละเอียด:\n1. ออกแบบซอฟต์แวร์คอมพิวเตอร์\n2. บริการให้คำปรึกษาด้านเทคโนโลยีสารสนเทศ\n3. ดำเนินการแพลตฟอร์มอีคอมเมิร์ซ',
+                
+                // Shareholder fields
+                'shareholderInfo': 'ผู้ถือหุ้น',
+                'shareholderName': 'ชื่อผู้ถือหุ้น',
+                'shareholderType': 'ประเภทผู้ถือหุ้น',
+                'naturalPerson': 'บุคคลธรรมดา',
+                'legalPerson': 'นิติบุคคล',
+                'shares': 'จำนวนหุ้น',
+                'sharePercentage': 'สัดส่วนการถือหุ้น',
+                'currentShareTotal': 'สัดส่วนการถือหุ้นรวมปัจจุบัน:',
+                
+                // Common buttons
+                'remove': 'ลบ',
+                'addShareholder': 'เพิ่มผู้ถือหุ้น',
+                'addDirector': 'เพิ่มกรรมการ',
+                'addSigner': 'เพิ่มผู้มีอำนาจลงนาม',
+                
+                // Submit buttons
+                'saveDraft': 'บันทึกแบบร่าง',
+                'submitForm': 'ส่งแบบฟอร์ม',
+                
+                // Help section
+                'needHelp': 'ต้องการความช่วยเหลือ?',
+                'contactInfo': 'หากมีคำถามใดๆ กรุณาติดต่อทีมบริการลูกค้าของเรา',
+                
+                // File upload
+                'uploadFiles': 'อัพโหลดไฟล์',
+                'supportedFormats': 'รองรับ: PDF, JPG, PNG (เลือกได้หลายไฟล์)',
+                
+                // Address proof
+                'addressProofDocs': 'เอกสารยืนยันที่อยู่',
+                'addressDocsRequired': '📄 เอกสารที่ต้องอัพโหลด:',
+                'householdRegistration': 'สำเนาทะเบียนบ้าน',
+                'rentalContract': 'สัญญาเช่า',
+                'ownerIdCard': 'บัตรประชาชนเจ้าของบ้าน',
+                'additionalDocs': 'หากทะเบียนบ้านไม่สามารถยืนยันตัวเจ้าของได้: ต้องมีโฉนดที่ดิน + สัญญาซื้อขาย',
+                
+                // Messages
+                'hgmAddressMessage': '✅ จะใช้บริการที่อยู่จดทะเบียนจาก HGM ไม่ต้องเตรียมเอกสารยืนยันที่อยู่',
+                'stampMessage': '✅ ตราประทับบริษัทจะจัดทำโดยสำนักงาน',
+                
+                // Placeholders
+                'nameThaiPlaceholder': 'ตัวอย่าง: นายสมชาย ใจดี',
+                'nameEnPlaceholder': 'ตัวอย่าง: SOMCHAI JAIDEE',
+                'companyNameEnPlaceholder': 'ตัวอย่าง: FOREVER NICE TECH CO., LTD.',
+                'companyNameZhPlaceholder': 'ตัวอย่าง: บริษัทเทคโนโลยีตลอดไป จำกัด',
+                'companyNameThPlaceholder': 'ตัวอย่าง: บริษัท เทคโนโลยีตลอดไป จำกัด',
+                'companyNameThHint': 'ไม่บังคับกรอก',
+                'capitalPlaceholder': 'ตัวอย่าง: 1000000',
+                'addressPlaceholder': 'กรุณากรอกที่อยู่จดทะเบียนบริษัท',
+                'completeAddressHint': 'กรุณาให้ที่อยู่จดทะเบียนที่สมบูรณ์',
+                
+                // Shareholder section
+                'shareholderNumber': 'ผู้ถือหุ้น',
+                'shareholderNameLabel': 'ชื่อผู้ถือหุ้น',
+                'shareholdingPercentage': 'สัดส่วนการถือหุ้น',
+                'uploadShareholderDocs': 'อัพโหลดเอกสารผู้ถือหุ้น',
+                'documentsRequired': '📄 เอกสารที่ต้องอัพโหลด:',
+                'taiwanPersonDoc2': 'คนไต้หวัน: สำเนาหนังสือเดินทาง',
+                'thaiPersonDoc2': 'คนไทย: บัตรประชาชน + สำเนาทะเบียนบ้าน',
+                'otherNationalityDoc2': 'สัญชาติอื่น: สำเนาหนังสือเดินทาง',
+                'legalPersonDoc2': 'นิติบุคคล: หนังสือรับรองบริษัท + เอกสารผู้มีอำนาจ',
+                'uploadHint': 'คลิกเพื่ออัพโหลดไฟล์หรือลากไฟล์มาที่นี่',
+                'nameInputPlaceholder': 'กรุณากรอกชื่อ',
+                'shareholdingPlaceholder': 'ตัวอย่าง: 50',
+                
+                // Director section
+                'directorNumber': 'กรรมการ',
+                'fromShareholder': 'เลือกจากผู้ถือหุ้น',
+                'external': 'บุคคลภายนอก',
+                'selectShareholder': 'เลือกผู้ถือหุ้น',
+                'directorName': 'ชื่อกรรมการ',
+                'uploadDirectorDocs': 'อัพโหลดเอกสารกรรมการ',
+                'taiwanPersonDoc3': 'คนไต้หวัน: สำเนาหนังสือเดินทาง',
+                'thaiPersonDoc3': 'คนไทย: สำเนาบัตรประชาชน',
+                'otherNationalityDoc3': 'สัญชาติอื่น: สำเนาหนังสือเดินทาง',
+                
+                // Manager section
+                'managerSelection': 'การเลือกผู้จัดการ',
+                'managerFromDirector': 'ผู้จัดการเป็นกรรมการคนหนึ่ง',
+                'externalManager': 'ผู้จัดการภายนอก',
+                'selectDirectorAsManager': 'กรุณาเลือกกรรมการคนใดเป็นผู้จัดการ',
+                'managerDocNote': 'เอกสารผู้จัดการจะใช้เอกสารที่กรรมการคนนั้นอัพโหลดไว้แล้ว',
+                'managerName': 'ชื่อผู้จัดการ',
+                'uploadManagerDocs': 'อัพโหลดเอกสารผู้จัดการ',
+                
+                // Signing authority section
+                'signingAuthority': 'การกำหนดอำนาจลงนาม',
+                'signerNumber': 'ผู้มีอำนาจลงนาม',
+                'selectDirector': 'เลือกกรรมการ',
+                'signerName': 'ชื่อ',
+                'signingMethod': 'วิธีการลงนาม',
+                'anyOne': 'ลงนาม 1 คนใดก็ได้',
+                'anyTwo': 'ลงนาม 2 คนใดก็ได้',
+                'twoOrMore': 'ลงนามสองคนขึ้นไป',
+                'authSigningMethod': 'วิธีการอนุมัติการลงนาม',
+                'singleSigning': 'ลงนามเดี่ยว (คนใดคนหนึ่งสามารถเป็นตัวแทนได้)',
+                'jointSigning': 'ลงนามร่วม (ต้องลงนามทุกคน)',
+                'fromDirector': 'เลือกจากกรรมการ',
+                'uploadSignerDocs': 'อัพโหลดเอกสารผู้มีอำนาจลงนาม',
+                
+                // Address proof section
+                'addressProofDocsTitle': 'เอกสารยืนยันที่อยู่',
+                'householdRegCopy': 'สำเนาทะเบียนบ้าน',
+                'rentalAgreement': 'สัญญาเช่า',
+                'ownerIdCopy': 'บัตรประชาชนเจ้าของบ้าน',
+                'additionalDocsNote': 'หากทะเบียนบ้านไม่สามารถยืนยันตัวเจ้าของได้: ต้องมีโฉนดที่ดิน + สัญญาซื้อขาย',
+                'uploadAddressProof': 'อัพโหลดเอกสารยืนยันที่อยู่ที่เกี่ยวข้อง',
+                
+                // File upload
+                'uploadHint': 'คลิกเพื่ออัพโหลดไฟล์หรือลากไฟล์มาที่นี่',
+                'supportedFormats': 'รองรับ: PDF, JPG, PNG',
+                'addDirectorBtnText': '+ เพิ่มกรรมการ'
+            },
+            'en': {
+                // Header
+                'pageTitle': 'Company Registration Form',
+                'pageSubtitle': 'Please fill in the basic information and upload required documents',
+                
+                // Important notice
+                'importantNoticeTitle': '📌 Important Notice: Document Preparation',
+                'taiwanPerson': 'Taiwanese:',
+                'taiwanPersonDoc': 'Passport copy only (must be signed by the person)',
+                'thaiPerson': 'Thai:',
+                'thaiPersonDoc': 'ID card copy + House registration copy (must be signed by the person)',
+                'otherNationality': 'Other nationalities:',
+                'otherNationalityDoc': 'Passport copy (must be signed by the person)',
+                'legalPerson': 'Legal entity:',
+                'legalPersonDoc': 'Company registration certificate + Authorized person ID documents',
+                'documentNote': '💡 Must provide "copy" and sign on the copy, then send the signed copy to the office',
+                
+                // Section headers
+                'section1': '1. Company Basic Information',
+                'section2': '2. Shareholder Information',
+                'section3': '3. Director Information',
+                'section4': '4. Manager Information',
+                'section5': '5. Authorized Signers',
+                
+                // Company info fields
+                'companyNameEn': 'Company Name (English)',
+                'companyNameZh': 'Company Name (Chinese)',
+                'companyNameTh': 'Company Name (Thai)',
+                'capital': 'Registered Capital',
+                'businessItems': 'Business Objectives',
+                'companyAddress': 'Company Registered Address',
+                'useHgmAddress': 'Use HGM address service?',
+                'yes': 'Yes',
+                'no': 'No',
+                'companyStamp': 'Company Stamp',
+                
+                // Hints
+                'companyNameEnHint': 'Please use UPPERCASE English letters',
+                'companyNameZhHint': 'Optional field',
+                'capitalHint': 'Please enter amount (THB)',
+                'businessItemsPlaceholder': 'Please describe business objectives in detail:\n1. Computer software design\n2. Information technology consulting services\n3. E-commerce platform operation',
+                
+                // Shareholder fields
+                'shareholderInfo': 'Shareholder',
+                'shareholderName': 'Shareholder Name',
+                'shareholderType': 'Shareholder Type',
+                'naturalPerson': 'Natural Person',
+                'legalPerson': 'Legal Entity',
+                'shares': 'Number of Shares',
+                'sharePercentage': 'Share Percentage',
+                'currentShareTotal': 'Current total shareholding:',
+                
+                // Common buttons
+                'remove': 'Remove',
+                'addShareholder': 'Add Shareholder',
+                'addDirector': 'Add Director',
+                'addSigner': 'Add Authorized Signer',
+                
+                // Submit buttons
+                'saveDraft': 'Save Draft',
+                'submitForm': 'Submit Form',
+                
+                // Help section
+                'needHelp': 'Need Help?',
+                'contactInfo': 'If you have any questions, please contact our customer service team',
+                
+                // File upload
+                'uploadFiles': 'Upload Files',
+                'supportedFormats': 'Supported: PDF, JPG, PNG (multiple selection allowed)',
+                
+                // Address proof
+                'addressProofDocs': 'Address Proof Documents',
+                'addressDocsRequired': '📄 Documents to upload:',
+                'householdRegistration': 'House registration copy',
+                'rentalContract': 'Rental agreement',
+                'ownerIdCard': 'House owner ID card',
+                'additionalDocs': 'If house registration cannot confirm owner: Need land title deed + purchase agreement',
+                
+                // Messages
+                'hgmAddressMessage': '✅ Will use HGM registered address service, no need to prepare address proof documents',
+                'stampMessage': '✅ Company stamps will be provided by the office',
+                
+                // Placeholders
+                'nameThaiPlaceholder': 'e.g.: นายสมชาย ใจดี',
+                'nameEnPlaceholder': 'e.g.: SOMCHAI JAIDEE',
+                'companyNameEnPlaceholder': 'e.g.: FOREVER NICE TECH CO., LTD.',
+                'companyNameZhPlaceholder': 'e.g.: Forever Technology Co., Ltd.',
+                'companyNameThPlaceholder': 'e.g.: บริษัท เทคโนโลยีตลอดไป จำกัด',
+                'companyNameThHint': 'Optional field',
+                'capitalPlaceholder': 'e.g.: 1000000',
+                'addressPlaceholder': 'Please enter company registered address',
+                'completeAddressHint': 'Please provide complete registered address',
+                
+                // Shareholder section
+                'shareholderNumber': 'Shareholder',
+                'shareholderNameLabel': 'Shareholder Name',
+                'shareholdingPercentage': 'Shareholding Percentage',
+                'uploadShareholderDocs': 'Upload Shareholder Documents',
+                'documentsRequired': '📄 Documents to upload:',
+                'taiwanPersonDoc2': 'Taiwanese: Passport copy',
+                'thaiPersonDoc2': 'Thai: ID card + House registration copy',
+                'otherNationalityDoc2': 'Other nationality: Passport copy',
+                'legalPersonDoc2': 'Legal entity: Company certificate + Authorized person ID',
+                'uploadHint': 'Click to upload files or drag files here',
+                'nameInputPlaceholder': 'Please enter name',
+                'shareholdingPlaceholder': 'e.g.: 50',
+                
+                // Director section
+                'directorNumber': 'Director',
+                'fromShareholder': 'Select from shareholders',
+                'external': 'External person',
+                'selectShareholder': 'Select shareholder',
+                'directorName': 'Director Name',
+                'uploadDirectorDocs': 'Upload Director Documents',
+                'taiwanPersonDoc3': 'Taiwanese: Passport copy',
+                'thaiPersonDoc3': 'Thai: ID card copy',
+                'otherNationalityDoc3': 'Other nationality: Passport copy',
+                
+                // Manager section
+                'managerSelection': 'Manager Selection',
+                'managerFromDirector': 'Manager is one of the directors',
+                'externalManager': 'External manager',
+                'selectDirectorAsManager': 'Please select which director will be the manager',
+                'managerDocNote': 'Manager documents will use the files uploaded by that director',
+                'managerName': 'Manager Name',
+                'uploadManagerDocs': 'Upload Manager Documents',
+                
+                // Signing authority section
+                'signingAuthority': 'Signing Authority Setting',
+                'signerNumber': 'Authorized Signer',
+                'selectDirector': 'Select director',
+                'signerName': 'Name',
+                'signingMethod': 'Signing Method',
+                'anyOne': 'Any 1 person signs',
+                'anyTwo': 'Any 2 people sign',
+                'twoOrMore': 'Two or more people sign',
+                'authSigningMethod': 'Authorization Signing Method',
+                'singleSigning': 'Individual signing (any one person can represent)',
+                'jointSigning': 'Joint signing (all people must sign)',
+                'fromDirector': 'Select from directors',
+                'uploadSignerDocs': 'Upload Signer Documents',
+                
+                // Address proof section
+                'addressProofDocsTitle': 'Address Proof Documents',
+                'householdRegCopy': 'House registration copy',
+                'rentalAgreement': 'Rental agreement',
+                'ownerIdCopy': 'House owner ID card',
+                'additionalDocsNote': 'If house registration cannot confirm owner: Need land title deed + purchase agreement',
+                'uploadAddressProof': 'Upload address proof related documents',
+                
+                // File upload
+                'uploadHint': 'Click to upload files or drag files here',
+                'supportedFormats': 'Supported formats: PDF, JPG, PNG',
+                'addDirectorBtnText': '+ Add Director'
+            }
+        };
+        
+        // Language switching function
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update active button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+            
+            // Update all translatable elements
+            updateTranslations();
+            
+            // Update dropdowns to use new language
+            updateSelects();
+            updateManagerDirectorSelect();
+            updateSignerDirectorSelects();
+        }
+        
+        function updateTranslations() {
+            const t = translations[currentLanguage];
+            
+            // Update page title
+            document.querySelector('.header h1').textContent = t.pageTitle;
+            document.querySelector('.header p').textContent = t.pageSubtitle;
+            document.title = t.pageTitle;
+            
+            // Update important notice
+            document.querySelector('.important-notice h3').textContent = t.importantNoticeTitle;
+            
+            // Update document list
+            document.getElementById('taiwanPerson').textContent = t.taiwanPerson;
+            document.getElementById('taiwanPersonDoc').textContent = t.taiwanPersonDoc;
+            document.getElementById('thaiPerson').textContent = t.thaiPerson;
+            document.getElementById('thaiPersonDoc').textContent = t.thaiPersonDoc;
+            document.getElementById('otherNationality').textContent = t.otherNationality;
+            document.getElementById('otherNationalityDoc').textContent = t.otherNationalityDoc;
+            document.getElementById('legalPerson').textContent = t.legalPerson;
+            document.getElementById('legalPersonDoc').textContent = t.legalPersonDoc;
+            document.getElementById('documentNote').textContent = t.documentNote;
+            
+            // Update section headers
+            const sectionHeaders = document.querySelectorAll('.section-header');
+            sectionHeaders[0].textContent = t.section1;
+            sectionHeaders[1].textContent = t.section2;
+            if (sectionHeaders[2]) sectionHeaders[2].textContent = t.section3;
+            if (sectionHeaders[3]) sectionHeaders[3].textContent = t.section4;
+            if (sectionHeaders[4]) sectionHeaders[4].textContent = t.section5;
+            
+            // Update form labels and placeholders
+            updateFormFields();
+            
+            // Update buttons
+            updateButtons();
+            
+            // Update messages
+            updateMessages();
+        }
+        
+        function updateFormFields() {
+            const t = translations[currentLanguage];
+            
+            // Company name fields
+            const companyNameEnRow = document.querySelector('input[name="company_name_en"]').closest('tr');
+            companyNameEnRow.querySelector('th').innerHTML = t.companyNameEn + '<span class="required">*</span>';
+            companyNameEnRow.querySelector('input').placeholder = t.companyNameEnPlaceholder;
+            companyNameEnRow.querySelector('.hint').textContent = t.companyNameEnHint;
+            
+            const companyNameZhRow = document.querySelector('input[name="company_name_zh"]').closest('tr');
+            companyNameZhRow.querySelector('th').textContent = t.companyNameZh;
+            companyNameZhRow.querySelector('input').placeholder = t.companyNameZhPlaceholder;
+            companyNameZhRow.querySelector('.hint').textContent = t.companyNameZhHint;
+            
+            // Company name Thai field
+            const companyNameThRow = document.querySelector('input[name="company_name_th"]').closest('tr');
+            companyNameThRow.querySelector('th').textContent = t.companyNameTh;
+            companyNameThRow.querySelector('input').placeholder = t.companyNameThPlaceholder;
+            companyNameThRow.querySelector('.hint').textContent = t.companyNameThHint;
+            
+            // Capital field
+            const capitalRow = document.querySelector('input[name="capital"]').closest('tr');
+            capitalRow.querySelector('th').innerHTML = t.capital + '<span class="required">*</span>';
+            capitalRow.querySelector('input').placeholder = t.capitalPlaceholder;
+            capitalRow.querySelector('.hint').textContent = t.capitalHint;
+            
+            // Business items
+            const businessRow = document.querySelector('textarea[name="business_items"]').closest('tr');
+            businessRow.querySelector('th').innerHTML = t.businessItems + '<span class="required">*</span>';
+            businessRow.querySelector('textarea').placeholder = t.businessItemsPlaceholder;
+            
+            // Address section
+            const addressRow = document.querySelector('input[name="use_hgm"]').closest('tr');
+            addressRow.querySelector('th').innerHTML = t.companyAddress + '<span class="required">*</span>';
+            addressRow.querySelector('label[style]').textContent = t.useHgmAddress;
+            
+            // Radio buttons
+            const radioLabels = addressRow.querySelectorAll('.radio-item span');
+            if (currentLanguage === 'zh-TW') {
+                radioLabels[0].textContent = '是，使用 HGM 地址';
+                radioLabels[1].textContent = '否，使用自有地址';
+            } else if (currentLanguage === 'th') {
+                radioLabels[0].textContent = 'ใช่ ใช้ที่อยู่ HGM';
+                radioLabels[1].textContent = 'ไม่ ใช้ที่อยู่ตนเอง';
+            } else {
+                radioLabels[0].textContent = 'Yes, use HGM address';
+                radioLabels[1].textContent = 'No, use own address';
+            }
+            
+            // Update all name input placeholders
+            document.querySelectorAll('.name-input').forEach(input => {
+                input.placeholder = t.nameInputPlaceholder;
+            });
+            
+            // Update shareholding input placeholders
+            document.querySelectorAll('.shareholding-input').forEach(input => {
+                input.placeholder = t.shareholdingPlaceholder;
+            });
+            
+            // Update shareholder section elements
+            document.querySelectorAll('.shareholder-title').forEach(el => {
+                const number = el.textContent.match(/\d+/)[0];
+                el.textContent = t.shareholderNumber + ' ' + number;
+            });
+            document.querySelectorAll('.shareholder-name-label').forEach(el => {
+                el.innerHTML = t.shareholderNameLabel + '<span class="required">*</span>';
+            });
+            document.querySelectorAll('.shareholding-percentage-label').forEach(el => {
+                el.innerHTML = t.shareholdingPercentage + '<span class="required">*</span>';
+            });
+            document.querySelectorAll('.upload-shareholder-docs-label').forEach(el => {
+                el.innerHTML = t.uploadShareholderDocs + '<span class="required">*</span>';
+            });
+            
+            // Update director section elements
+            document.querySelectorAll('.director-title').forEach(el => {
+                const number = el.textContent.match(/\d+/)[0];
+                el.textContent = t.directorNumber + ' ' + number;
+            });
+            document.querySelectorAll('.from-shareholder-label').forEach(el => {
+                el.textContent = t.fromShareholder;
+            });
+            document.querySelectorAll('.external-label').forEach(el => {
+                el.textContent = t.external;
+            });
+            document.querySelectorAll('.select-shareholder-label').forEach(el => {
+                el.textContent = t.selectShareholder;
+            });
+            document.querySelectorAll('.director-name-label').forEach(el => {
+                el.innerHTML = t.directorName + '<span class="required">*</span>';
+            });
+            
+            // Update document lists
+            document.querySelectorAll('.documents-required-title').forEach(el => {
+                el.textContent = t.documentsRequired;
+            });
+            document.querySelectorAll('.taiwan-person-doc2').forEach(el => {
+                el.textContent = t.taiwanPersonDoc2;
+            });
+            document.querySelectorAll('.thai-person-doc2').forEach(el => {
+                el.textContent = t.thaiPersonDoc2;
+            });
+            document.querySelectorAll('.other-nationality-doc2').forEach(el => {
+                el.textContent = t.otherNationalityDoc2;
+            });
+            document.querySelectorAll('.legal-person-doc2').forEach(el => {
+                el.textContent = t.legalPersonDoc2;
+            });
+            document.querySelectorAll('.taiwan-person-doc3').forEach(el => {
+                el.textContent = t.taiwanPersonDoc3;
+            });
+            document.querySelectorAll('.thai-person-doc3').forEach(el => {
+                el.textContent = t.thaiPersonDoc3;
+            });
+            document.querySelectorAll('.other-nationality-doc3').forEach(el => {
+                el.textContent = t.otherNationalityDoc3;
+            });
+            
+            // Update file upload elements
+            document.querySelectorAll('.upload-hint').forEach(el => {
+                el.textContent = t.uploadHint;
+            });
+            document.querySelectorAll('.supported-formats').forEach(el => {
+                el.textContent = t.supportedFormats;
+            });
+            
+            // Update address proof section
+            document.querySelectorAll('.address-proof-docs-title').forEach(el => {
+                el.innerHTML = t.addressProofDocsTitle + '<span class="required">*</span>';
+            });
+            document.querySelectorAll('.household-reg-copy').forEach(el => {
+                el.textContent = t.householdRegCopy;
+            });
+            document.querySelectorAll('.rental-agreement').forEach(el => {
+                el.textContent = t.rentalAgreement;
+            });
+            document.querySelectorAll('.owner-id-copy').forEach(el => {
+                el.textContent = t.ownerIdCopy;
+            });
+            document.querySelectorAll('.additional-docs-note').forEach(el => {
+                el.textContent = t.additionalDocsNote;
+            });
+            document.querySelectorAll('.upload-address-proof').forEach(el => {
+                el.textContent = t.uploadAddressProof;
+            });
+            
+            // Update manager section elements
+            document.querySelectorAll('.manager-from-director-label').forEach(el => {
+                el.textContent = t.managerFromDirector;
+            });
+            document.querySelectorAll('.external-manager-label').forEach(el => {
+                el.textContent = t.externalManager;
+            });
+            document.querySelectorAll('.select-director-as-manager-label').forEach(el => {
+                el.innerHTML = t.selectDirectorAsManager + '<span class="required">*</span>';
+            });
+            document.querySelectorAll('.manager-doc-note').forEach(el => {
+                el.textContent = t.managerDocNote;
+            });
+            document.querySelectorAll('.manager-name-label').forEach(el => {
+                el.innerHTML = t.managerName + '<span class="required">*</span>';
+            });
+            
+            // Update signing authority section elements
+            document.querySelectorAll('.auth-signing-method-label').forEach(el => {
+                el.innerHTML = t.authSigningMethod + '<span class="required">*</span>';
+            });
+            document.querySelectorAll('.single-signing-label').forEach(el => {
+                el.textContent = t.singleSigning;
+            });
+            document.querySelectorAll('.joint-signing-label').forEach(el => {
+                el.textContent = t.jointSigning;
+            });
+            document.querySelectorAll('.signer-title').forEach(el => {
+                const number = el.textContent.match(/\d+/)[0];
+                el.textContent = t.signerNumber + ' ' + number;
+            });
+            document.querySelectorAll('.from-director-label').forEach(el => {
+                el.textContent = t.fromDirector;
+            });
+            document.querySelectorAll('.select-director-label').forEach(el => {
+                el.textContent = t.selectDirector;
+            });
+            document.querySelectorAll('.signer-name-label').forEach(el => {
+                el.innerHTML = t.signerName + '<span class="required">*</span>';
+            });
+            
+            // Update document notes
+            document.querySelectorAll('.document-note').forEach(el => {
+                el.textContent = t.documentNote;
+            });
+            
+            // Update company stamp
+            document.querySelectorAll('.company-stamp-label').forEach(el => {
+                el.textContent = t.companyStamp;
+            });
+            document.querySelectorAll('.stamp-message').forEach(el => {
+                el.textContent = t.stampMessage;
+            });
+            
+            // Update file upload elements
+            document.querySelectorAll('.upload-hint').forEach(el => {
+                el.textContent = t.uploadHint;
+            });
+            document.querySelectorAll('.supported-formats').forEach(el => {
+                el.textContent = t.supportedFormats;
+            });
+            document.querySelectorAll('.add-director-btn-text').forEach(el => {
+                el.textContent = t.addDirectorBtnText;
+            });
+        }
+        
+        function updateButtons() {
+            const t = translations[currentLanguage];
+            
+            // Update all remove buttons
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.textContent = t.remove;
+            });
+            
+            // Update add buttons by class
+            document.querySelectorAll('.add-shareholder-btn').forEach(btn => {
+                btn.textContent = '+ ' + t.addShareholder;
+            });
+            document.querySelectorAll('.add-director-btn').forEach(btn => {
+                btn.textContent = '+ ' + t.addDirector;
+            });
+            document.querySelectorAll('.add-signer-btn').forEach(btn => {
+                btn.textContent = '+ ' + t.addSigner;
+            });
+            
+            // Update submit buttons
+            document.querySelector('.save-btn').textContent = t.saveDraft;
+            document.querySelector('.submit-btn').textContent = t.submitForm;
+        }
+        
+        function updateMessages() {
+            const t = translations[currentLanguage];
+            
+            // Update HGM address message
+            const hgmMessage = document.querySelector('#hgmAddressSection div');
+            if (hgmMessage) hgmMessage.textContent = t.hgmAddressMessage;
+            
+            // Update stamp message
+            const stampMessage = document.querySelector('td div[style*="e8f5e9"]');
+            if (stampMessage && stampMessage.textContent.includes('公司大小章')) {
+                stampMessage.textContent = t.stampMessage;
+            }
+            
+            // Update percentage display
+            updatePercentageDisplay();
+            
+            // Update help section
+            const helpSection = document.querySelector('.help-section');
+            if (helpSection) {
+                helpSection.querySelector('h3').textContent = t.needHelp;
+                helpSection.querySelector('p').textContent = t.contactInfo;
+            }
+        }
+        
+        function updatePercentageDisplay() {
+            const t = translations[currentLanguage];
+            const display = document.getElementById('percentageDisplay');
+            const currentPercent = display.textContent.match(/\d+/);
+            if (currentPercent) {
+                display.textContent = t.currentShareTotal + currentPercent[0] + '%';
+            }
+        }
 
         function toggleAddressSection() {
             const useHgm = document.querySelector('input[name="use_hgm"]:checked').value;
@@ -891,7 +1766,8 @@
             });
             
             const display = document.getElementById('percentageDisplay');
-            display.textContent = `目前持股比例總計：${total}%`;
+            const t = translations[currentLanguage];
+            display.textContent = t.currentShareTotal + total + '%';
             
             if (total === 100) {
                 display.className = 'percentage-display success';
@@ -914,7 +1790,8 @@
                 for (let i = 1; i <= shareholderCount; i++) {
                     const nameInput = document.querySelector(`input[name="shareholder_name_${i}"]`);
                     if (nameInput) {
-                        const name = nameInput.value || `股東 ${i}`;
+                        const t = translations[currentLanguage];
+                        const name = nameInput.value || `${t.shareholderNumber} ${i}`;
                         const option = document.createElement('option');
                         option.value = i;
                         option.textContent = name;
@@ -971,15 +1848,16 @@
                     option.value = i;
                     
                     // Get director name
+                    const t = translations[currentLanguage];
                     const directorSource = document.querySelector(`input[name="director_source_${i}"]:checked`);
                     if (directorSource && directorSource.value === 'shareholder') {
                         const shareholderSelect = document.querySelector(`select[name="director_shareholder_${i}"]`);
                         if (shareholderSelect) {
-                            option.textContent = `董事 ${i} (${shareholderSelect.options[shareholderSelect.selectedIndex]?.text || '股東'})`;
+                            option.textContent = `${t.directorNumber} ${i} (${shareholderSelect.options[shareholderSelect.selectedIndex]?.text || t.shareholderNumber})`;
                         }
                     } else {
                         const nameInput = document.querySelector(`input[name="external_director_name_${i}"]`);
-                        option.textContent = `董事 ${i} (${nameInput?.value || '外部人士'})`;
+                        option.textContent = `${t.directorNumber} ${i} (${nameInput?.value || t.external})`;
                     }
                     
                     select.appendChild(option);
@@ -1047,45 +1925,46 @@
             const container = document.getElementById('shareholdersContainer');
             const newShareholder = document.createElement('div');
             newShareholder.className = 'person-card';
+            const t = translations[currentLanguage];
             newShareholder.innerHTML = `
                 <div class="person-header">
                     <div>
                         <span class="person-number">${shareholderCount}</span>
-                        <span style="font-weight: bold;">股東 ${shareholderCount}</span>
+                        <span style="font-weight: bold;" class="shareholder-title">${t.shareholderNumber} ${shareholderCount}</span>
                     </div>
-                    <button type="button" class="remove-btn" onclick="removeShareholder(this)">移除</button>
+                    <button type="button" class="remove-btn" onclick="removeShareholder(this)">${t.remove}</button>
                 </div>
                 
                 <div class="simple-input-group">
-                    <label>股東姓名<span class="required">*</span></label>
-                    <input type="text" name="shareholder_name_${shareholderCount}" placeholder="請輸入姓名" required onchange="updateSelects()">
+                    <label class="shareholder-name-label">${t.shareholderNameLabel}<span class="required">*</span></label>
+                    <input type="text" name="shareholder_name_${shareholderCount}" class="name-input" placeholder="${t.nameInputPlaceholder}" required onchange="updateSelects()">
                 </div>
                 
                 <div class="simple-input-group">
-                    <label>持股比例<span class="required">*</span></label>
-                    <input type="number" name="share_percentage_${shareholderCount}" min="0" max="100" placeholder="例：50" required onchange="updatePercentage()">
+                    <label class="shareholding-percentage-label">${t.shareholdingPercentage}<span class="required">*</span></label>
+                    <input type="number" name="share_percentage_${shareholderCount}" min="0" max="100" class="shareholding-input" placeholder="${t.shareholdingPlaceholder}" required onchange="updatePercentage()">
                     <span>%</span>
                 </div>
                 
                 <div style="margin: 20px 0;">
-                    <label style="font-weight: bold; color: #2c3e50;">上傳股東文件<span class="required">*</span></label>
+                    <label style="font-weight: bold; color: #2c3e50;" class="upload-shareholder-docs-label">${t.uploadShareholderDocs}<span class="required">*</span></label>
                     <div class="document-requirements">
-                        <h4>📄 需要上傳的文件：</h4>
+                        <h4 class="documents-required-title">${t.documentsRequired}</h4>
                         <ul style="margin: 5px 0; padding-left: 20px;">
-                            <li>台灣人：護照影本</li>
-                            <li>泰國人：身份證 + 戶口名簿影本</li>
-                            <li>其他國籍：護照影本</li>
-                            <li>法人：公司登記證明 + 負責人身份證明</li>
+                            <li class="taiwan-person-doc2">${t.taiwanPersonDoc2}</li>
+                            <li class="thai-person-doc2">${t.thaiPersonDoc2}</li>
+                            <li class="other-nationality-doc2">${t.otherNationalityDoc2}</li>
+                            <li class="legal-person-doc2">${t.legalPersonDoc2}</li>
                         </ul>
-                        <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
-                            💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
+                        <p style="color: #c62828; margin-top: 10px; font-weight: bold;" class="document-note">
+                            ${t.documentNote}
                         </p>
                     </div>
                     <div class="file-upload-area" onclick="document.getElementById('shareholder_files_${shareholderCount}').click()">
                         <input type="file" id="shareholder_files_${shareholderCount}" name="shareholder_files_${shareholderCount}" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'shareholder_${shareholderCount}')">
                         <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                        <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                        <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                        <p style="margin: 5px 0;" class="upload-hint">${t.uploadHint}</p>
+                        <p style="font-size: 12px; color: #666;" class="supported-formats">${t.supportedFormats}</p>
                     </div>
                     <div class="file-list" id="file-list-shareholder_${shareholderCount}"></div>
                 </div>
@@ -1105,28 +1984,29 @@
             const container = document.getElementById('directorsContainer');
             const newDirector = document.createElement('div');
             newDirector.className = 'person-card';
+            const t = translations[currentLanguage];
             newDirector.innerHTML = `
                 <div class="person-header">
                     <div>
                         <span class="person-number">${directorCount}</span>
-                        <span style="font-weight: bold;">董事 ${directorCount}</span>
+                        <span style="font-weight: bold;" class="director-title">${t.directorNumber} ${directorCount}</span>
                     </div>
-                    <button type="button" class="remove-btn" onclick="removeDirector(this)">移除</button>
+                    <button type="button" class="remove-btn" onclick="removeDirector(this)">${t.remove}</button>
                 </div>
                 
                 <div class="radio-group">
                     <label class="radio-item">
                         <input type="radio" name="director_source_${directorCount}" value="shareholder" checked onchange="toggleDirectorSource(${directorCount})">
-                        <span>從股東選擇</span>
+                        <span class="from-shareholder-label">${t.fromShareholder}</span>
                     </label>
                     <label class="radio-item">
                         <input type="radio" name="director_source_${directorCount}" value="external" onchange="toggleDirectorSource(${directorCount})">
-                        <span>外部人士</span>
+                        <span class="external-label">${t.external}</span>
                     </label>
                 </div>
                 
                 <div id="shareholderDirectorSection_${directorCount}" style="margin-top: 15px;">
-                    <label style="font-weight: bold; color: #2c3e50;">選擇股東</label>
+                    <label style="font-weight: bold; color: #2c3e50;" class="select-shareholder-label">${t.selectShareholder}</label>
                     <select name="director_shareholder_${directorCount}" class="director-shareholder-select" style="margin-top: 5px;">
                         <!-- Options will be populated by updateSelects() -->
                     </select>
@@ -1134,28 +2014,28 @@
                 
                 <div id="externalDirectorSection_${directorCount}" style="display: none; margin-top: 15px;">
                     <div class="simple-input-group">
-                        <label>董事姓名<span class="required">*</span></label>
-                        <input type="text" name="external_director_name_${directorCount}" placeholder="請輸入姓名" onchange="updateManagerDirectorSelect(); updateSignerDirectorSelects();">
+                        <label class="director-name-label">${t.directorName}<span class="required">*</span></label>
+                        <input type="text" name="external_director_name_${directorCount}" class="name-input" placeholder="${t.nameInputPlaceholder}" onchange="updateManagerDirectorSelect(); updateSignerDirectorSelects();">
                     </div>
                     
                     <div style="margin-top: 15px;">
-                        <label style="font-weight: bold; color: #2c3e50;">上傳董事文件<span class="required">*</span></label>
+                        <label style="font-weight: bold; color: #2c3e50;" class="upload-director-docs-label">${t.uploadDirectorDocs}<span class="required">*</span></label>
                         <div class="document-requirements">
-                            <h4>📄 需要上傳的文件：</h4>
+                            <h4 class="documents-required-title">${t.documentsRequired}</h4>
                             <ul style="margin: 5px 0; padding-left: 20px;">
-                                <li>台灣人：護照影本</li>
-                                <li>泰國人：身份證影本</li>
-                                <li>其他國籍：護照影本</li>
+                                <li class="taiwan-person-doc3">${t.taiwanPersonDoc3}</li>
+                                <li class="thai-person-doc3">${t.thaiPersonDoc3}</li>
+                                <li class="other-nationality-doc3">${t.otherNationalityDoc3}</li>
                             </ul>
-                            <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
-                                💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
+                            <p style="color: #c62828; margin-top: 10px; font-weight: bold;" class="document-note">
+                                ${t.documentNote}
                             </p>
                         </div>
                         <div class="file-upload-area" onclick="document.getElementById('director_files_${directorCount}').click()">
                             <input type="file" id="director_files_${directorCount}" name="director_files_${directorCount}" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'director_${directorCount}')">
                             <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                            <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                            <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                            <p style="margin: 5px 0;" class="upload-hint">${t.uploadHint}</p>
+                            <p style="font-size: 12px; color: #666;" class="supported-formats">${t.supportedFormats}</p>
                         </div>
                         <div class="file-list" id="file-list-director_${directorCount}"></div>
                     </div>
@@ -1177,28 +2057,29 @@
             const newSigner = document.createElement('div');
             newSigner.className = 'person-card';
             newSigner.style.background = '#e8f4f8';
+            const t = translations[currentLanguage];
             newSigner.innerHTML = `
                 <div class="person-header">
                     <div>
                         <span class="person-number" style="background: #0277bd;">${signerCount}</span>
-                        <span style="font-weight: bold;">簽字人 ${signerCount}</span>
+                        <span style="font-weight: bold;" class="signer-title">${t.signerNumber} ${signerCount}</span>
                     </div>
-                    <button type="button" class="remove-btn" onclick="removeSigner(this)">移除</button>
+                    <button type="button" class="remove-btn" onclick="removeSigner(this)">${t.remove}</button>
                 </div>
                 
                 <div class="radio-group">
                     <label class="radio-item">
                         <input type="radio" name="signer_source_${signerCount}" value="director" checked onchange="toggleSignerSource(${signerCount})">
-                        <span>從董事選擇</span>
+                        <span class="from-director-label">${t.fromDirector}</span>
                     </label>
                     <label class="radio-item">
                         <input type="radio" name="signer_source_${signerCount}" value="external" onchange="toggleSignerSource(${signerCount})">
-                        <span>外部人士</span>
+                        <span class="external-label">${t.external}</span>
                     </label>
                 </div>
                 
                 <div id="directorSignerSection_${signerCount}" style="margin-top: 15px;">
-                    <label style="font-weight: bold; color: #2c3e50;">選擇董事</label>
+                    <label style="font-weight: bold; color: #2c3e50;" class="select-director-label">${t.selectDirector}</label>
                     <select name="signer_director_${signerCount}" class="signer-director-select" style="margin-top: 5px;">
                         <!-- Options will be populated by updateSignerDirectorSelects() -->
                     </select>
@@ -1206,28 +2087,28 @@
                 
                 <div id="externalSignerSection_${signerCount}" style="display: none; margin-top: 15px;">
                     <div class="simple-input-group">
-                        <label>姓名<span class="required">*</span></label>
-                        <input type="text" name="external_signer_name_${signerCount}" placeholder="請輸入姓名">
+                        <label class="signer-name-label">${t.signerName}<span class="required">*</span></label>
+                        <input type="text" name="external_signer_name_${signerCount}" class="name-input" placeholder="${t.nameInputPlaceholder}">
                     </div>
                     
                     <div style="margin-top: 15px;">
-                        <label style="font-weight: bold; color: #2c3e50;">上傳簽字人文件<span class="required">*</span></label>
+                        <label style="font-weight: bold; color: #2c3e50;">${t.uploadSignerDocs}<span class="required">*</span></label>
                         <div class="document-requirements">
-                            <h4>📄 需要上傳的文件：</h4>
+                            <h4 class="documents-required-title">${t.documentsRequired}</h4>
                             <ul style="margin: 5px 0; padding-left: 20px;">
-                                <li>台灣人：護照影本</li>
-                                <li>泰國人：身份證影本</li>
-                                <li>其他國籍：護照影本</li>
+                                <li class="taiwan-person-doc3">${t.taiwanPersonDoc3}</li>
+                                <li class="thai-person-doc3">${t.thaiPersonDoc3}</li>
+                                <li class="other-nationality-doc3">${t.otherNationalityDoc3}</li>
                             </ul>
-                            <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
-                                💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
+                            <p style="color: #c62828; margin-top: 10px; font-weight: bold;" class="document-note">
+                                ${t.documentNote}
                             </p>
                         </div>
                         <div class="file-upload-area" onclick="document.getElementById('signer_files_${signerCount}').click()">
                             <input type="file" id="signer_files_${signerCount}" name="signer_files_${signerCount}" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'signer_${signerCount}')">
                             <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                            <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                            <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                            <p style="margin: 5px 0;" class="upload-hint">${t.uploadHint}</p>
+                            <p style="font-size: 12px; color: #666;" class="supported-formats">${t.supportedFormats}</p>
                         </div>
                         <div class="file-list" id="file-list-signer_${signerCount}"></div>
                     </div>
@@ -1564,7 +2445,8 @@
             });
             
             const display = document.getElementById('percentageDisplay');
-            display.textContent = `目前持股比例總計：${total}%`;
+            const t = translations[currentLanguage];
+            display.textContent = t.currentShareTotal + total + '%';
             
             if (total === 100) {
                 display.className = 'percentage-display success';
@@ -1587,7 +2469,8 @@
                 for (let i = 1; i <= shareholderCount; i++) {
                     const nameInput = document.querySelector(`input[name="shareholder_name_${i}"]`);
                     if (nameInput) {
-                        const name = nameInput.value || `股東 ${i}`;
+                        const t = translations[currentLanguage];
+                        const name = nameInput.value || `${t.shareholderNumber} ${i}`;
                         const option = document.createElement('option');
                         option.value = i;
                         option.textContent = name;
@@ -1644,15 +2527,16 @@
                     option.value = i;
                     
                     // Get director name
+                    const t = translations[currentLanguage];
                     const directorSource = document.querySelector(`input[name="director_source_${i}"]:checked`);
                     if (directorSource && directorSource.value === 'shareholder') {
                         const shareholderSelect = document.querySelector(`select[name="director_shareholder_${i}"]`);
                         if (shareholderSelect) {
-                            option.textContent = `董事 ${i} (${shareholderSelect.options[shareholderSelect.selectedIndex]?.text || '股東'})`;
+                            option.textContent = `${t.directorNumber} ${i} (${shareholderSelect.options[shareholderSelect.selectedIndex]?.text || t.shareholderNumber})`;
                         }
                     } else {
                         const nameInput = document.querySelector(`input[name="external_director_name_${i}"]`);
-                        option.textContent = `董事 ${i} (${nameInput?.value || '外部人士'})`;
+                        option.textContent = `${t.directorNumber} ${i} (${nameInput?.value || t.external})`;
                     }
                     
                     select.appendChild(option);
@@ -1720,45 +2604,46 @@
             const container = document.getElementById('shareholdersContainer');
             const newShareholder = document.createElement('div');
             newShareholder.className = 'person-card';
+            const t = translations[currentLanguage];
             newShareholder.innerHTML = `
                 <div class="person-header">
                     <div>
                         <span class="person-number">${shareholderCount}</span>
-                        <span style="font-weight: bold;">股東 ${shareholderCount}</span>
+                        <span style="font-weight: bold;" class="shareholder-title">${t.shareholderNumber} ${shareholderCount}</span>
                     </div>
-                    <button type="button" class="remove-btn" onclick="removeShareholder(this)">移除</button>
+                    <button type="button" class="remove-btn" onclick="removeShareholder(this)">${t.remove}</button>
                 </div>
                 
                 <div class="simple-input-group">
-                    <label>股東姓名<span class="required">*</span></label>
-                    <input type="text" name="shareholder_name_${shareholderCount}" placeholder="請輸入姓名" required onchange="updateSelects()">
+                    <label class="shareholder-name-label">${t.shareholderNameLabel}<span class="required">*</span></label>
+                    <input type="text" name="shareholder_name_${shareholderCount}" class="name-input" placeholder="${t.nameInputPlaceholder}" required onchange="updateSelects()">
                 </div>
                 
                 <div class="simple-input-group">
-                    <label>持股比例<span class="required">*</span></label>
-                    <input type="number" name="share_percentage_${shareholderCount}" min="0" max="100" placeholder="例：50" required onchange="updatePercentage()">
+                    <label class="shareholding-percentage-label">${t.shareholdingPercentage}<span class="required">*</span></label>
+                    <input type="number" name="share_percentage_${shareholderCount}" min="0" max="100" class="shareholding-input" placeholder="${t.shareholdingPlaceholder}" required onchange="updatePercentage()">
                     <span>%</span>
                 </div>
                 
                 <div style="margin: 20px 0;">
-                    <label style="font-weight: bold; color: #2c3e50;">上傳股東文件<span class="required">*</span></label>
+                    <label style="font-weight: bold; color: #2c3e50;" class="upload-shareholder-docs-label">${t.uploadShareholderDocs}<span class="required">*</span></label>
                     <div class="document-requirements">
-                        <h4>📄 需要上傳的文件：</h4>
+                        <h4 class="documents-required-title">${t.documentsRequired}</h4>
                         <ul style="margin: 5px 0; padding-left: 20px;">
-                            <li>台灣人：護照影本</li>
-                            <li>泰國人：身份證 + 戶口名簿影本</li>
-                            <li>其他國籍：護照影本</li>
-                            <li>法人：公司登記證明 + 負責人身份證明</li>
+                            <li class="taiwan-person-doc2">${t.taiwanPersonDoc2}</li>
+                            <li class="thai-person-doc2">${t.thaiPersonDoc2}</li>
+                            <li class="other-nationality-doc2">${t.otherNationalityDoc2}</li>
+                            <li class="legal-person-doc2">${t.legalPersonDoc2}</li>
                         </ul>
-                        <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
-                            💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
+                        <p style="color: #c62828; margin-top: 10px; font-weight: bold;" class="document-note">
+                            ${t.documentNote}
                         </p>
                     </div>
                     <div class="file-upload-area" onclick="document.getElementById('shareholder_files_${shareholderCount}').click()">
                         <input type="file" id="shareholder_files_${shareholderCount}" name="shareholder_files_${shareholderCount}" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'shareholder_${shareholderCount}')">
                         <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                        <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                        <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                        <p style="margin: 5px 0;" class="upload-hint">${t.uploadHint}</p>
+                        <p style="font-size: 12px; color: #666;" class="supported-formats">${t.supportedFormats}</p>
                     </div>
                     <div class="file-list" id="file-list-shareholder_${shareholderCount}"></div>
                 </div>
@@ -1778,28 +2663,29 @@
             const container = document.getElementById('directorsContainer');
             const newDirector = document.createElement('div');
             newDirector.className = 'person-card';
+            const t = translations[currentLanguage];
             newDirector.innerHTML = `
                 <div class="person-header">
                     <div>
                         <span class="person-number">${directorCount}</span>
-                        <span style="font-weight: bold;">董事 ${directorCount}</span>
+                        <span style="font-weight: bold;" class="director-title">${t.directorNumber} ${directorCount}</span>
                     </div>
-                    <button type="button" class="remove-btn" onclick="removeDirector(this)">移除</button>
+                    <button type="button" class="remove-btn" onclick="removeDirector(this)">${t.remove}</button>
                 </div>
                 
                 <div class="radio-group">
                     <label class="radio-item">
                         <input type="radio" name="director_source_${directorCount}" value="shareholder" checked onchange="toggleDirectorSource(${directorCount})">
-                        <span>從股東選擇</span>
+                        <span class="from-shareholder-label">${t.fromShareholder}</span>
                     </label>
                     <label class="radio-item">
                         <input type="radio" name="director_source_${directorCount}" value="external" onchange="toggleDirectorSource(${directorCount})">
-                        <span>外部人士</span>
+                        <span class="external-label">${t.external}</span>
                     </label>
                 </div>
                 
                 <div id="shareholderDirectorSection_${directorCount}" style="margin-top: 15px;">
-                    <label style="font-weight: bold; color: #2c3e50;">選擇股東</label>
+                    <label style="font-weight: bold; color: #2c3e50;" class="select-shareholder-label">${t.selectShareholder}</label>
                     <select name="director_shareholder_${directorCount}" class="director-shareholder-select" style="margin-top: 5px;">
                         <!-- Options will be populated by updateSelects() -->
                     </select>
@@ -1807,28 +2693,28 @@
                 
                 <div id="externalDirectorSection_${directorCount}" style="display: none; margin-top: 15px;">
                     <div class="simple-input-group">
-                        <label>董事姓名<span class="required">*</span></label>
-                        <input type="text" name="external_director_name_${directorCount}" placeholder="請輸入姓名" onchange="updateManagerDirectorSelect(); updateSignerDirectorSelects();">
+                        <label class="director-name-label">${t.directorName}<span class="required">*</span></label>
+                        <input type="text" name="external_director_name_${directorCount}" class="name-input" placeholder="${t.nameInputPlaceholder}" onchange="updateManagerDirectorSelect(); updateSignerDirectorSelects();">
                     </div>
                     
                     <div style="margin-top: 15px;">
-                        <label style="font-weight: bold; color: #2c3e50;">上傳董事文件<span class="required">*</span></label>
+                        <label style="font-weight: bold; color: #2c3e50;" class="upload-director-docs-label">${t.uploadDirectorDocs}<span class="required">*</span></label>
                         <div class="document-requirements">
-                            <h4>📄 需要上傳的文件：</h4>
+                            <h4 class="documents-required-title">${t.documentsRequired}</h4>
                             <ul style="margin: 5px 0; padding-left: 20px;">
-                                <li>台灣人：護照影本</li>
-                                <li>泰國人：身份證影本</li>
-                                <li>其他國籍：護照影本</li>
+                                <li class="taiwan-person-doc3">${t.taiwanPersonDoc3}</li>
+                                <li class="thai-person-doc3">${t.thaiPersonDoc3}</li>
+                                <li class="other-nationality-doc3">${t.otherNationalityDoc3}</li>
                             </ul>
-                            <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
-                                💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
+                            <p style="color: #c62828; margin-top: 10px; font-weight: bold;" class="document-note">
+                                ${t.documentNote}
                             </p>
                         </div>
                         <div class="file-upload-area" onclick="document.getElementById('director_files_${directorCount}').click()">
                             <input type="file" id="director_files_${directorCount}" name="director_files_${directorCount}" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'director_${directorCount}')">
                             <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                            <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                            <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                            <p style="margin: 5px 0;" class="upload-hint">${t.uploadHint}</p>
+                            <p style="font-size: 12px; color: #666;" class="supported-formats">${t.supportedFormats}</p>
                         </div>
                         <div class="file-list" id="file-list-director_${directorCount}"></div>
                     </div>
@@ -1850,28 +2736,29 @@
             const newSigner = document.createElement('div');
             newSigner.className = 'person-card';
             newSigner.style.background = '#e8f4f8';
+            const t = translations[currentLanguage];
             newSigner.innerHTML = `
                 <div class="person-header">
                     <div>
                         <span class="person-number" style="background: #0277bd;">${signerCount}</span>
-                        <span style="font-weight: bold;">簽字人 ${signerCount}</span>
+                        <span style="font-weight: bold;" class="signer-title">${t.signerNumber} ${signerCount}</span>
                     </div>
-                    <button type="button" class="remove-btn" onclick="removeSigner(this)">移除</button>
+                    <button type="button" class="remove-btn" onclick="removeSigner(this)">${t.remove}</button>
                 </div>
                 
                 <div class="radio-group">
                     <label class="radio-item">
                         <input type="radio" name="signer_source_${signerCount}" value="director" checked onchange="toggleSignerSource(${signerCount})">
-                        <span>從董事選擇</span>
+                        <span class="from-director-label">${t.fromDirector}</span>
                     </label>
                     <label class="radio-item">
                         <input type="radio" name="signer_source_${signerCount}" value="external" onchange="toggleSignerSource(${signerCount})">
-                        <span>外部人士</span>
+                        <span class="external-label">${t.external}</span>
                     </label>
                 </div>
                 
                 <div id="directorSignerSection_${signerCount}" style="margin-top: 15px;">
-                    <label style="font-weight: bold; color: #2c3e50;">選擇董事</label>
+                    <label style="font-weight: bold; color: #2c3e50;" class="select-director-label">${t.selectDirector}</label>
                     <select name="signer_director_${signerCount}" class="signer-director-select" style="margin-top: 5px;">
                         <!-- Options will be populated by updateSignerDirectorSelects() -->
                     </select>
@@ -1879,28 +2766,28 @@
                 
                 <div id="externalSignerSection_${signerCount}" style="display: none; margin-top: 15px;">
                     <div class="simple-input-group">
-                        <label>姓名<span class="required">*</span></label>
-                        <input type="text" name="external_signer_name_${signerCount}" placeholder="請輸入姓名">
+                        <label class="signer-name-label">${t.signerName}<span class="required">*</span></label>
+                        <input type="text" name="external_signer_name_${signerCount}" class="name-input" placeholder="${t.nameInputPlaceholder}">
                     </div>
                     
                     <div style="margin-top: 15px;">
-                        <label style="font-weight: bold; color: #2c3e50;">上傳簽字人文件<span class="required">*</span></label>
+                        <label style="font-weight: bold; color: #2c3e50;">${t.uploadSignerDocs}<span class="required">*</span></label>
                         <div class="document-requirements">
-                            <h4>📄 需要上傳的文件：</h4>
+                            <h4 class="documents-required-title">${t.documentsRequired}</h4>
                             <ul style="margin: 5px 0; padding-left: 20px;">
-                                <li>台灣人：護照影本</li>
-                                <li>泰國人：身份證影本</li>
-                                <li>其他國籍：護照影本</li>
+                                <li class="taiwan-person-doc3">${t.taiwanPersonDoc3}</li>
+                                <li class="thai-person-doc3">${t.thaiPersonDoc3}</li>
+                                <li class="other-nationality-doc3">${t.otherNationalityDoc3}</li>
                             </ul>
-                            <p style="color: #c62828; margin-top: 10px; font-weight: bold;">
-                                💡 需提供「影本」並在影本上簽名，同時請將簽名過後的影本寄到事務所
+                            <p style="color: #c62828; margin-top: 10px; font-weight: bold;" class="document-note">
+                                ${t.documentNote}
                             </p>
                         </div>
                         <div class="file-upload-area" onclick="document.getElementById('signer_files_${signerCount}').click()">
                             <input type="file" id="signer_files_${signerCount}" name="signer_files_${signerCount}" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleFileSelect(event, 'signer_${signerCount}')">
                             <p style="font-size: 20px; margin: 10px 0;">📤</p>
-                            <p style="margin: 5px 0;">點擊上傳檔案或拖曳檔案到此處</p>
-                            <p style="font-size: 12px; color: #666;">支援格式：PDF, JPG, PNG</p>
+                            <p style="margin: 5px 0;" class="upload-hint">${t.uploadHint}</p>
+                            <p style="font-size: 12px; color: #666;" class="supported-formats">${t.supportedFormats}</p>
                         </div>
                         <div class="file-list" id="file-list-signer_${signerCount}"></div>
                     </div>
